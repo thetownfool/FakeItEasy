@@ -48,6 +48,22 @@
             [SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", Justification = "Required for testing.")]
             [SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", Justification = "Required for testing.")]
             string RequestOfFourWithOutputAndReference(string text1, string text2, ref string text3, out string text4);
+
+            int RequestOfFive(int number1, int number2, int number3, int number4, int number5);
+
+            string RequestOfFive(string text1, string text2, string text3, string text4, string text5);
+
+            [SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", Justification = "Required for testing.")]
+            [SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", Justification = "Required for testing.")]
+            string RequestOfFiveWithOutputAndReference(string text1, string text2, ref string text3, ref string text4, out string text5);
+
+            int RequestOfSix(int number1, int number2, int number3, int number4, int number5, int number6);
+
+            string RequestOfSix(string text1, string text2, string text3, string text4, string text5, string text6);
+
+            [SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", Justification = "Required for testing.")]
+            [SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", Justification = "Required for testing.")]
+            string RequestOfSixWithOutputAndReference(string text1, string text2, ref string text3, ref string text4, ref string text5, out string text6);
         }
 
         [Test]
@@ -669,6 +685,441 @@
 
             // Act, Assert
             AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.Int32, System.String)");
+        }
+
+        [Test]
+        public void ReturnsLazily_with_5_arguments_should_use_returns_lazily_ReturnsLazily_with_action_having_5_arguments()
+        {
+            // Arrange
+            const int FirstArgument = 5;
+            const int SecondArgument = 8;
+            const int ThirdArgument = 13;
+            const int FourthArgument = 21;
+            const int FifthArgument = 34;
+            const int ReturnValue = 0;
+
+            int? firstCollectedArgument = null;
+            int? secondCollectedArgument = null;
+            int? thirdCollectedArgument = null;
+            int? fourthCollectedArgument = null;
+            int? fifthCollectedArgument = null;
+
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfFive(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .ReturnsLazily((int i, int j, int k, int l, int m) =>
+                {
+                    firstCollectedArgument = i;
+                    secondCollectedArgument = j;
+                    thirdCollectedArgument = k;
+                    fourthCollectedArgument = l;
+                    fifthCollectedArgument = m;
+
+                    return ReturnValue;
+                });
+
+            // Act
+            var result = fake.RequestOfFive(FirstArgument, SecondArgument, ThirdArgument, FourthArgument, FifthArgument);
+
+            // Assert
+            result.Should().Be(ReturnValue);
+            firstCollectedArgument.Should().HaveValue().And.Be(FirstArgument);
+            secondCollectedArgument.Should().HaveValue().And.Be(SecondArgument);
+            thirdCollectedArgument.Should().HaveValue().And.Be(ThirdArgument);
+            fourthCollectedArgument.Should().HaveValue().And.Be(FourthArgument);
+            fifthCollectedArgument.Should().HaveValue().And.Be(FifthArgument);
+        }
+
+        [Test]
+        public void ReturnsLazily_with_5_arguments_should_support_overloads()
+        {
+            // Arrange
+            const string FirstArgument = "first argument";
+            const string SecondArgument = "second argument";
+            const string ThirdArgument = "third argument";
+            const string FourthArgument = "fourth argument";
+            const string FifthArgument = "fifth argument";
+
+            const string ReturnValue = "Result";
+
+            string firstCollectedArgument = null;
+            string secondCollectedArgument = null;
+            string thirdCollectedArgument = null;
+            string fourthCollectedArgument = null;
+            string fifthCollectedArgument = null;
+
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfFive(A<string>._, A<string>._, A<string>._, A<string>._, A<string>._))
+                .ReturnsLazily((string s, string t, string u, string v, string w) =>
+                {
+                    firstCollectedArgument = s;
+                    secondCollectedArgument = t;
+                    thirdCollectedArgument = u;
+                    fourthCollectedArgument = v;
+                    fifthCollectedArgument = w;
+
+                    return ReturnValue;
+                });
+
+            // Act
+            var result = fake.RequestOfFive(FirstArgument, SecondArgument, ThirdArgument, FourthArgument, FifthArgument);
+
+            // Assert
+            result.Should().Be(ReturnValue);
+            firstCollectedArgument.Should().Be(FirstArgument);
+            secondCollectedArgument.Should().Be(SecondArgument);
+            thirdCollectedArgument.Should().Be(ThirdArgument);
+            fourthCollectedArgument.Should().Be(FourthArgument);
+            fifthCollectedArgument.Should().Be(FifthArgument);
+        }
+
+        [Test]
+        public void ReturnsLazily_with_5_arguments_should_support_out_and_ref()
+        {
+            // Arrange
+            const string FirstArgument = "first argument";
+            const string SecondArgument = "second argument";
+            string thirdArgument = "third argument";
+            string fourthArgument = "fourth argument";
+            string fifthArgument = "fifth argument";
+            const string ReturnValue = "Result";
+
+            string firstCollectedArgument = null;
+            string secondCollectedArgument = null;
+            string thirdCollectedArgument = null;
+            string fourthCollectedArgument = null;
+            string fifthCollectedArgument = null;
+
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfFiveWithOutputAndReference(A<string>._, A<string>._, ref thirdArgument, ref fourthArgument, out fifthArgument))
+                .ReturnsLazily((string s, string t, string u, string v, string w) =>
+                {
+                    firstCollectedArgument = s;
+                    secondCollectedArgument = t;
+                    thirdCollectedArgument = u;
+                    fourthCollectedArgument = v;
+                    fifthCollectedArgument = w;
+
+                    return ReturnValue;
+                });
+
+            // Act
+            var result = fake.RequestOfFiveWithOutputAndReference(FirstArgument, SecondArgument, ref thirdArgument, ref fourthArgument, out fifthArgument);
+
+            // Assert
+            result.Should().Be(ReturnValue);
+            firstCollectedArgument.Should().Be(FirstArgument);
+            secondCollectedArgument.Should().Be(SecondArgument);
+            thirdCollectedArgument.Should().Be(thirdArgument);
+            fourthCollectedArgument.Should().Be(fourthArgument);
+            fifthCollectedArgument.Should().Be(fifthArgument);
+        }
+        
+        [Test]
+        public void ReturnsLazily_with_5_arguments_should_throw_exception_when_argument_count_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfFour(A<int>._, A<int>._, A<int>._, A<int>._))
+                .ReturnsLazily((int i, int j, int k, int l, int m) => { throw new InvalidOperationException("returns lazily action should not be executed"); });
+            Action act = () => fake.RequestOfFour(5, 8, 13, 21);
+
+            // Act, Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)");
+        }
+
+        [Test]
+        public void ReturnsLazily_with_5_arguments_should_throw_exception_when_first_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfFive(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .ReturnsLazily((string s, int i, int j, int k, int l) => { throw new InvalidOperationException("returns lazily action should not be executed"); });
+            Action act = () => fake.RequestOfFive(5, 8, 13, 21, 34);
+
+            // Act, Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.String, System.Int32, System.Int32, System.Int32, System.Int32)");
+        }
+
+        [Test]
+        public void ReturnsLazily_with_5_arguments_should_throw_exception_when_second_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfFive(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .ReturnsLazily((int i, string s, int j, int k, int l) => { throw new InvalidOperationException("returns lazily action should not be executed"); });
+            Action act = () => fake.RequestOfFive(5, 8, 13, 21, 34);
+
+            // Act, Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.String, System.Int32, System.Int32, System.Int32)");
+        }
+
+        [Test]
+        public void ReturnsLazily_with_5_arguments_should_throw_exception_when_third_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfFive(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .ReturnsLazily((int i, int j, string s, int k, int l) => { throw new InvalidOperationException("returns lazily action should not be executed"); });
+            Action act = () => fake.RequestOfFive(5, 8, 13, 21, 34);
+
+            // Act, Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.String, System.Int32, System.Int32)");
+        }
+
+        [Test]
+        public void ReturnsLazily_with_5_arguments_should_throw_exception_when_forth_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfFive(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .ReturnsLazily((int i, int j, int k, string s, int l) => { throw new InvalidOperationException("returns lazily action should not be executed"); });
+            Action act = () => fake.RequestOfFive(5, 8, 13, 21, 34);
+
+            // Act, Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.Int32, System.String, System.Int32)");
+        }
+
+        [Test]
+        public void ReturnsLazily_with_5_arguments_should_throw_exception_when_fifth_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfFive(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .ReturnsLazily((int i, int j, int k, int l, string s) => { throw new InvalidOperationException("returns lazily action should not be executed"); });
+            Action act = () => fake.RequestOfFive(5, 8, 13, 21, 34);
+
+            // Act, Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.Int32, System.Int32, System.String)");
+        }
+
+        [Test]
+        public void ReturnsLazily_with_6_arguments_should_use_returns_lazily_ReturnsLazily_with_action_having_6_arguments()
+        {
+            // Arrange
+            const int FirstArgument = 5;
+            const int SecondArgument = 8;
+            const int ThirdArgument = 13;
+            const int FourthArgument = 21;
+            const int FifthArgument = 34;
+            const int SixthArgument = 55;
+            const int ReturnValue = 0;
+
+            int? firstCollectedArgument = null;
+            int? secondCollectedArgument = null;
+            int? thirdCollectedArgument = null;
+            int? fourthCollectedArgument = null;
+            int? fifthCollectedArgument = null;
+            int? sixthCollectedArgument = null;
+
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfSix(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .ReturnsLazily((int i, int j, int k, int l, int m, int n) =>
+                {
+                    firstCollectedArgument = i;
+                    secondCollectedArgument = j;
+                    thirdCollectedArgument = k;
+                    fourthCollectedArgument = l;
+                    fifthCollectedArgument = m;
+                    sixthCollectedArgument = n;
+
+                    return ReturnValue;
+                });
+
+            // Act
+            var result = fake.RequestOfSix(FirstArgument, SecondArgument, ThirdArgument, FourthArgument, FifthArgument, SixthArgument);
+
+            // Assert
+            result.Should().Be(ReturnValue);
+            firstCollectedArgument.Should().HaveValue().And.Be(FirstArgument);
+            secondCollectedArgument.Should().HaveValue().And.Be(SecondArgument);
+            thirdCollectedArgument.Should().HaveValue().And.Be(ThirdArgument);
+            fourthCollectedArgument.Should().HaveValue().And.Be(FourthArgument);
+            fifthCollectedArgument.Should().HaveValue().And.Be(FifthArgument);
+            sixthCollectedArgument.Should().HaveValue().And.Be(SixthArgument);
+        }
+
+        [Test]
+        public void ReturnsLazily_with_6_arguments_should_support_overloads()
+        {
+            // Arrange
+            const string FirstArgument = "first argument";
+            const string SecondArgument = "second argument";
+            const string ThirdArgument = "third argument";
+            const string FourthArgument = "fourth argument";
+            const string FifthArgument = "fifth argument";
+            const string SixthArgument = "sixth argument";
+
+            const string ReturnValue = "Result";
+
+            string firstCollectedArgument = null;
+            string secondCollectedArgument = null;
+            string thirdCollectedArgument = null;
+            string fourthCollectedArgument = null;
+            string fifthCollectedArgument = null;
+            string sixthCollectedArgument = null;
+
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfSix(A<string>._, A<string>._, A<string>._, A<string>._, A<string>._, A<string>._))
+                .ReturnsLazily((string s, string t, string u, string v, string w, string x) =>
+                {
+                    firstCollectedArgument = s;
+                    secondCollectedArgument = t;
+                    thirdCollectedArgument = u;
+                    fourthCollectedArgument = v;
+                    fifthCollectedArgument = w;
+                    sixthCollectedArgument = x;
+
+                    return ReturnValue;
+                });
+
+            // Act
+            var result = fake.RequestOfSix(FirstArgument, SecondArgument, ThirdArgument, FourthArgument, FifthArgument, SixthArgument);
+
+            // Assert
+            result.Should().Be(ReturnValue);
+            firstCollectedArgument.Should().Be(FirstArgument);
+            secondCollectedArgument.Should().Be(SecondArgument);
+            thirdCollectedArgument.Should().Be(ThirdArgument);
+            fourthCollectedArgument.Should().Be(FourthArgument);
+            fifthCollectedArgument.Should().Be(FifthArgument);
+            sixthCollectedArgument.Should().Be(SixthArgument);
+        }
+
+        [Test]
+        public void ReturnsLazily_with_6_arguments_should_support_out_and_ref()
+        {
+            // Arrange
+            const string FirstArgument = "first argument";
+            const string SecondArgument = "second argument";
+            string thirdArgument = "third argument";
+            string fourthArgument = "fourth argument";
+            string fifthArgument = "fifth argument";
+            string sixthArgument = "sixth argument";
+            const string ReturnValue = "Result";
+
+            string firstCollectedArgument = null;
+            string secondCollectedArgument = null;
+            string thirdCollectedArgument = null;
+            string fourthCollectedArgument = null;
+            string fifthCollectedArgument = null;
+            string sixthCollectedArgument = null;
+
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfSixWithOutputAndReference(A<string>._, A<string>._, ref thirdArgument, ref fourthArgument, ref fifthArgument, out sixthArgument))
+                .ReturnsLazily((string s, string t, string u, string v, string w, string x) =>
+                {
+                    firstCollectedArgument = s;
+                    secondCollectedArgument = t;
+                    thirdCollectedArgument = u;
+                    fourthCollectedArgument = v;
+                    fifthCollectedArgument = w;
+                    sixthCollectedArgument = x;
+
+                    return ReturnValue;
+                });
+
+            // Act
+            var result = fake.RequestOfSixWithOutputAndReference(FirstArgument, SecondArgument, ref thirdArgument, ref fourthArgument, ref fifthArgument, out sixthArgument);
+
+            // Assert
+            result.Should().Be(ReturnValue);
+            firstCollectedArgument.Should().Be(FirstArgument);
+            secondCollectedArgument.Should().Be(SecondArgument);
+            thirdCollectedArgument.Should().Be(thirdArgument);
+            fourthCollectedArgument.Should().Be(fourthArgument);
+            fifthCollectedArgument.Should().Be(fifthArgument);
+            sixthCollectedArgument.Should().Be(sixthArgument);
+        }
+
+        [Test]
+        public void ReturnsLazily_with_6_arguments_should_throw_exception_when_argument_count_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfFive(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .ReturnsLazily((int i, int j, int k, int l, int m, int n) => { throw new InvalidOperationException("returns lazily action should not be executed"); });
+            Action act = () => fake.RequestOfFive(5, 8, 13, 21, 34);
+
+            // Act, Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)");
+        }
+
+        [Test]
+        public void ReturnsLazily_with_6_arguments_should_throw_exception_when_first_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfSix(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .ReturnsLazily((string s, int i, int j, int k, int l, int m) => { throw new InvalidOperationException("returns lazily action should not be executed"); });
+            Action act = () => fake.RequestOfSix(5, 8, 13, 21, 34, 55);
+
+            // Act, Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.String, System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)");
+        }
+
+        [Test]
+        public void ReturnsLazily_with_6_arguments_should_throw_exception_when_second_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfSix(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .ReturnsLazily((int i, string s, int j, int k, int l, int m) => { throw new InvalidOperationException("returns lazily action should not be executed"); });
+            Action act = () => fake.RequestOfSix(5, 8, 13, 21, 34, 55);
+
+            // Act, Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.String, System.Int32, System.Int32, System.Int32, System.Int32)");
+        }
+
+        [Test]
+        public void ReturnsLazily_with_6_arguments_should_throw_exception_when_third_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfSix(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .ReturnsLazily((int i, int j, string s, int k, int l, int m) => { throw new InvalidOperationException("returns lazily action should not be executed"); });
+            Action act = () => fake.RequestOfSix(5, 8, 13, 21, 34, 55);
+
+            // Act, Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.String, System.Int32, System.Int32, System.Int32)");
+        }
+
+        [Test]
+        public void ReturnsLazily_with_6_arguments_should_throw_exception_when_fourth_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfSix(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .ReturnsLazily((int i, int j, int k, string s, int l, int m) => { throw new InvalidOperationException("returns lazily action should not be executed"); });
+            Action act = () => fake.RequestOfSix(5, 8, 13, 21, 34, 55);
+
+            // Act, Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.Int32, System.String, System.Int32, System.Int32)");
+        }
+
+        [Test]
+        public void ReturnsLazily_with_6_arguments_should_throw_exception_when_fifth_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfSix(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .ReturnsLazily((int i, int j, int k, int l, string s, int m) => { throw new InvalidOperationException("returns lazily action should not be executed"); });
+            Action act = () => fake.RequestOfSix(5, 8, 13, 21, 34, 55);
+
+            // Act, Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.Int32, System.Int32, System.String, System.Int32)");
+        }
+
+        [Test]
+        public void ReturnsLazily_with_6_arguments_should_throw_exception_when_sixth_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            A.CallTo(() => fake.RequestOfSix(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .ReturnsLazily((int i, int j, int k, int l, int m, string s) => { throw new InvalidOperationException("returns lazily action should not be executed"); });
+            Action act = () => fake.RequestOfSix(5, 8, 13, 21, 34, 55);
+
+            // Act, Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.String)");
         }
 
         [Test]

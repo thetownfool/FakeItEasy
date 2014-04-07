@@ -28,6 +28,14 @@
             void ActionOfFour(int number1, int number2, int number3, int number4);
 
             void ActionOfFour(string text1, string text2, string text3, string text4);
+
+            void ActionOfFive(int number1, int number2, int number3, int number4, int number5);
+
+            void ActionOfFive(string text1, string text2, string text3, string text4, string text5);
+
+            void ActionOfSix(int number1, int number2, int number3, int number4, int number5, int number6);
+
+            void ActionOfSix(string text1, string text2, string text3, string text4, string text5, string text6);
         }
 
         [Test]
@@ -480,6 +488,287 @@
 
             // Assert
             AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.Int32, System.String)");
+        }
+
+        [Test]
+        public void Throws_with_5_arguments_should_support_overloads()
+        {
+            // Arrange
+            const string FirstArgument = "First Argument";
+            const string SecondArgument = "Second Argument";
+            const string ThirdArgument = "Third Argument";
+            const string FourthArgument = "Fourth Argument";
+            const string FifthArgument = "Fifth Argument";
+            string firstCollectedArgument = null;
+            string secondCollectedArgument = null;
+            string thirdCollectedArgument = null;
+            string fourthCollectedArgument = null;
+            string fifthCollectedArgument = null;
+            var exceptionToThrow = new InvalidOperationException();
+
+            var fake = A.Fake<IInterface>();
+            Action act = () => fake.ActionOfFive(FirstArgument, SecondArgument, ThirdArgument, FourthArgument, FifthArgument);
+
+            // Act
+            A.CallTo(() => fake.ActionOfFive(FirstArgument, SecondArgument, ThirdArgument, FourthArgument, FifthArgument))
+                .Throws((string s, string t, string u, string v, string w) =>
+                {
+                    firstCollectedArgument = s;
+                    secondCollectedArgument = t;
+                    thirdCollectedArgument = u;
+                    fourthCollectedArgument = v;
+                    fifthCollectedArgument = w;
+                    return exceptionToThrow;
+                });
+
+            // Assert
+            var thrownException = Record.Exception(act);
+            thrownException.Should().Be(exceptionToThrow);
+            firstCollectedArgument.Should().Be(FirstArgument);
+            secondCollectedArgument.Should().Be(SecondArgument);
+            thirdCollectedArgument.Should().Be(ThirdArgument);
+            fourthCollectedArgument.Should().Be(FourthArgument);
+            fifthCollectedArgument.Should().Be(FifthArgument);
+        }
+
+        [Test]
+        public void Throws_with_5_arguments_should_throw_fake_configuration_exception_when_argument_count_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            Action act = () => fake.ActionOfFour(5, 8, 13, 21);
+
+            // Act
+            A.CallTo(() => fake.ActionOfFour(A<int>._, A<int>._, A<int>._, A<int>._))
+                .Throws((int i, int j, int k, int l, int m) => { throw new InvalidOperationException("throws action should not be executed"); });
+
+            // Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)");
+        }
+
+        [Test]
+        public void Throws_with_5_arguments_should_throw_fake_configuration_exception_when_first_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            Action act = () => fake.ActionOfFive(2, 5, 8, 13, 21);
+
+            // Act
+            A.CallTo(() => fake.ActionOfFive(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .Throws((string s, int i, int j, int l, int m) => { throw new InvalidOperationException("throws action should not be executed"); });
+
+            // Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.String, System.Int32, System.Int32, System.Int32, System.Int32)");
+        }
+
+        [Test]
+        public void Throws_with_5_arguments_should_throw_fake_configuration_exception_when_second_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            Action act = () => fake.ActionOfFive(2, 5, 8, 13, 21);
+
+            // Act
+            A.CallTo(() => fake.ActionOfFive(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .Throws((int i, string s, int j, int l, int m) => { throw new InvalidOperationException("throws action should not be executed"); });
+
+            // Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.String, System.Int32, System.Int32, System.Int32)");
+        }
+
+        [Test]
+        public void Throws_with_5_arguments_should_throw_fake_configuration_exception_when_third_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            Action act = () => fake.ActionOfFive(2, 5, 8, 13, 21);
+
+            // Act
+            A.CallTo(() => fake.ActionOfFive(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .Throws((int i, int j, string s, int l, int m) => { throw new InvalidOperationException("throws action should not be executed"); });
+
+            // Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.String, System.Int32, System.Int32)");
+        }
+
+        [Test]
+        public void Throws_with_5_arguments_should_throw_fake_configuration_exception_when_four_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            Action act = () => fake.ActionOfFive(2, 5, 8, 13, 21);
+
+            // Act
+            A.CallTo(() => fake.ActionOfFive(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .Throws((int i, int j, int l, string s, int m) => { throw new InvalidOperationException("throws action should not be executed"); });
+
+            // Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.Int32, System.String, System.Int32)");
+        }
+
+        [Test]
+        public void Throws_with_5_arguments_should_throw_fake_configuration_exception_when_fifth_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            Action act = () => fake.ActionOfFive(2, 5, 8, 13, 21);
+
+            // Act
+            A.CallTo(() => fake.ActionOfFive(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .Throws((int i, int j, int l, int m, string s) => { throw new InvalidOperationException("throws action should not be executed"); });
+
+            // Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.Int32, System.Int32, System.String)");
+        }
+
+        [Test]
+        public void Throws_with_6_arguments_should_support_overloads()
+        {
+            // Arrange
+            const string FirstArgument = "First Argument";
+            const string SecondArgument = "Second Argument";
+            const string ThirdArgument = "Third Argument";
+            const string FourthArgument = "Fourth Argument";
+            const string FifthArgument = "Fifth Argument";
+            const string SixthArgument = "Sixth Argument";
+            string firstCollectedArgument = null;
+            string secondCollectedArgument = null;
+            string thirdCollectedArgument = null;
+            string fourthCollectedArgument = null;
+            string fifthCollectedArgument = null;
+            string sixthCollectedArgument = null;
+            var exceptionToThrow = new InvalidOperationException();
+
+            var fake = A.Fake<IInterface>();
+            Action act = () => fake.ActionOfSix(FirstArgument, SecondArgument, ThirdArgument, FourthArgument, FifthArgument, SixthArgument);
+
+            // Act
+            A.CallTo(() => fake.ActionOfSix(FirstArgument, SecondArgument, ThirdArgument, FourthArgument, FifthArgument, SixthArgument))
+                .Throws((string s, string t, string u, string v, string w, string x) =>
+                {
+                    firstCollectedArgument = s;
+                    secondCollectedArgument = t;
+                    thirdCollectedArgument = u;
+                    fourthCollectedArgument = v;
+                    fifthCollectedArgument = w;
+                    sixthCollectedArgument = x;
+                    return exceptionToThrow;
+                });
+
+            // Assert
+            var thrownException = Record.Exception(act);
+            thrownException.Should().Be(exceptionToThrow);
+            firstCollectedArgument.Should().Be(FirstArgument);
+            secondCollectedArgument.Should().Be(SecondArgument);
+            thirdCollectedArgument.Should().Be(ThirdArgument);
+            fourthCollectedArgument.Should().Be(FourthArgument);
+            fifthCollectedArgument.Should().Be(FifthArgument);
+            sixthCollectedArgument.Should().Be(SixthArgument);
+        }
+
+        [Test]
+        public void Throws_with_6_arguments_should_throw_fake_configuration_exception_when_argument_count_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            Action act = () => fake.ActionOfFive(5, 8, 13, 21, 34);
+
+            // Act
+            A.CallTo(() => fake.ActionOfFive(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .Throws((int i, int j, int k, int l, int m, int n) => { throw new InvalidOperationException("throws action should not be executed"); });
+
+            // Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)");
+        }
+
+        [Test]
+        public void Throws_with_6_arguments_should_throw_fake_configuration_exception_when_first_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            Action act = () => fake.ActionOfSix(2, 5, 8, 13, 21, 34);
+
+            // Act
+            A.CallTo(() => fake.ActionOfSix(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .Throws((string s, int i, int j, int l, int m, int n) => { throw new InvalidOperationException("throws action should not be executed"); });
+
+            // Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.String, System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)");
+        }
+
+        [Test]
+        public void Throws_with_6_arguments_should_throw_fake_configuration_exception_when_second_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            Action act = () => fake.ActionOfSix(2, 5, 8, 13, 21, 34);
+
+            // Act
+            A.CallTo(() => fake.ActionOfSix(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .Throws((int i, string s, int j, int l, int m, int n) => { throw new InvalidOperationException("throws action should not be executed"); });
+
+            // Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.String, System.Int32, System.Int32, System.Int32, System.Int32)");
+        }
+
+        [Test]
+        public void Throws_with_6_arguments_should_throw_fake_configuration_exception_when_third_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            Action act = () => fake.ActionOfSix(2, 5, 8, 13, 21, 34);
+
+            // Act
+            A.CallTo(() => fake.ActionOfSix(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .Throws((int i, int j, string s, int l, int m, int n) => { throw new InvalidOperationException("throws action should not be executed"); });
+
+            // Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.String, System.Int32, System.Int32, System.Int32)");
+        }
+
+        [Test]
+        public void Throws_with_6_arguments_should_throw_fake_configuration_exception_when_fourth_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            Action act = () => fake.ActionOfSix(2, 5, 8, 13, 21, 34);
+
+            // Act
+            A.CallTo(() => fake.ActionOfSix(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .Throws((int i, int j, int l, string s, int m, int n) => { throw new InvalidOperationException("throws action should not be executed"); });
+
+            // Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.Int32, System.String, System.Int32, System.Int32)");
+        }
+
+        [Test]
+        public void Throws_with_6_arguments_should_throw_fake_configuration_exception_when_fifth_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            Action act = () => fake.ActionOfSix(2, 5, 8, 13, 21, 34);
+
+            // Act
+            A.CallTo(() => fake.ActionOfSix(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .Throws((int i, int j, int l, int m, string s, int n) => { throw new InvalidOperationException("throws action should not be executed"); });
+
+            // Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.Int32, System.Int32, System.String, System.Int32)");
+        }
+
+        [Test]
+        public void Throws_with_6_arguments_should_throw_fake_configuration_exception_when_sixth_argument_type_does_not_match()
+        {
+            // Arrange
+            var fake = A.Fake<IInterface>();
+            Action act = () => fake.ActionOfSix(2, 5, 8, 13, 21, 34);
+
+            // Act
+            A.CallTo(() => fake.ActionOfSix(A<int>._, A<int>._, A<int>._, A<int>._, A<int>._, A<int>._))
+                .Throws((int i, int j, int l, int m, int n, string s) => { throw new InvalidOperationException("throws action should not be executed"); });
+
+            // Assert
+            AssertThatSignatureMismatchExceptionIsThrown(act, "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.Int32)", "(System.Int32, System.Int32, System.Int32, System.Int32, System.Int32, System.String)");
         }
 
         [Test]

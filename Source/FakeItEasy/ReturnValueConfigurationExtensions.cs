@@ -162,11 +162,68 @@ namespace FakeItEasy
             Guard.AgainstNull(configuration, "configuration");
 
             return configuration.ReturnsLazily(call =>
-                {
-                    ValueProducerSignatureHelper.AssertThatValueProducerSignatureSatisfiesCallSignature(call.Method, valueProducer.Method, NameOfReturnsLazilyFeature);
+            {
+                ValueProducerSignatureHelper.AssertThatValueProducerSignatureSatisfiesCallSignature(call.Method, valueProducer.Method, NameOfReturnsLazilyFeature);
 
-                    return valueProducer(call.GetArgument<T1>(0), call.GetArgument<T2>(1), call.GetArgument<T3>(2), call.GetArgument<T4>(3));
-                });
+                return valueProducer(call.GetArgument<T1>(0), call.GetArgument<T2>(1), call.GetArgument<T3>(2), call.GetArgument<T4>(3));
+            });
+        }
+
+        /// <summary>
+        /// Specifies a function used to produce a return value when the configured call is made.
+        /// The function will be called each time this call is made and can return different values
+        /// each time.
+        /// </summary>
+        /// <param name="configuration">The configuration to extend.</param>
+        /// <param name="valueProducer">A function that produces the return value.</param>
+        /// <typeparam name="TReturnType">The type of the return value.</typeparam>
+        /// <typeparam name="T1">Type of the first argument of the faked method call.</typeparam>
+        /// <typeparam name="T2">Type of the second argument of the faked method call.</typeparam>
+        /// <typeparam name="T3">Type of the third argument of the faked method call.</typeparam>
+        /// <typeparam name="T4">Type of the fourth argument of the faked method call.</typeparam>
+        /// <typeparam name="T5">Type of the fifth argument of the faked method call.</typeparam>
+        /// <returns>A configuration object.</returns>
+        /// <exception cref="FakeConfigurationException">The signatures of the faked method and the <paramref name="valueProducer"/> do not match.</exception>
+        public static IAfterCallSpecifiedWithOutAndRefParametersConfiguration
+            ReturnsLazily<TReturnType, T1, T2, T3, T4, T5>(this IReturnValueConfiguration<TReturnType> configuration, Func<T1, T2, T3, T4, T5, TReturnType> valueProducer)
+        {
+            Guard.AgainstNull(configuration, "configuration");
+
+            return configuration.ReturnsLazily(call =>
+            {
+                ValueProducerSignatureHelper.AssertThatValueProducerSignatureSatisfiesCallSignature(call.Method, valueProducer.Method, NameOfReturnsLazilyFeature);
+
+                return valueProducer(call.GetArgument<T1>(0), call.GetArgument<T2>(1), call.GetArgument<T3>(2), call.GetArgument<T4>(3), call.GetArgument<T5>(4));
+            });
+        }
+
+        /// <summary>
+        /// Specifies a function used to produce a return value when the configured call is made.
+        /// The function will be called each time this call is made and can return different values
+        /// each time.
+        /// </summary>
+        /// <param name="configuration">The configuration to extend.</param>
+        /// <param name="valueProducer">A function that produces the return value.</param>
+        /// <typeparam name="TReturnType">The type of the return value.</typeparam>
+        /// <typeparam name="T1">Type of the first argument of the faked method call.</typeparam>
+        /// <typeparam name="T2">Type of the second argument of the faked method call.</typeparam>
+        /// <typeparam name="T3">Type of the third argument of the faked method call.</typeparam>
+        /// <typeparam name="T4">Type of the fourth argument of the faked method call.</typeparam>
+        /// <typeparam name="T5">Type of the fifth argument of the faked method call.</typeparam>
+        /// <typeparam name="T6">Type of the sixth argument of the faked method call.</typeparam>
+        /// <returns>A configuration object.</returns>
+        /// <exception cref="FakeConfigurationException">The signatures of the faked method and the <paramref name="valueProducer"/> do not match.</exception>
+        public static IAfterCallSpecifiedWithOutAndRefParametersConfiguration
+            ReturnsLazily<TReturnType, T1, T2, T3, T4, T5, T6>(this IReturnValueConfiguration<TReturnType> configuration, Func<T1, T2, T3, T4, T5, T6, TReturnType> valueProducer)
+        {
+            Guard.AgainstNull(configuration, "configuration");
+
+            return configuration.ReturnsLazily(call =>
+            {
+                ValueProducerSignatureHelper.AssertThatValueProducerSignatureSatisfiesCallSignature(call.Method, valueProducer.Method, NameOfReturnsLazilyFeature);
+
+                return valueProducer(call.GetArgument<T1>(0), call.GetArgument<T2>(1), call.GetArgument<T3>(2), call.GetArgument<T4>(3), call.GetArgument<T5>(4), call.GetArgument<T6>(5));
+            });
         }
 
         /// <summary>
